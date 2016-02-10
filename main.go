@@ -43,6 +43,7 @@ func handleReverseRequest(w http.ResponseWriter, r *http.Request) {
 
 	// always allow access origin
 	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "GET, PUT, POST, HEAD, TRACE, DELETE, PATCH, COPY, HEAD, LINK, OPTIONS")
 
 	if r.Method == "OPTIONS" {
 		debug("CORS asked for ", toCall)
