@@ -22,6 +22,8 @@ var (
 	portTo = "127.0.0.1:8000"
 	// host:port to listen.
 	listen = "0.0.0.0:3000"
+	// scheme to proxy
+	scheme = "http"
 	// verbose message.
 	verbose = false
 )
@@ -30,13 +32,6 @@ var (
 // If an "OPTIONS" request is called, we
 // only return Access-Control-Allow-* to let XHttpRequest working.
 func handleReverseRequest(w http.ResponseWriter, r *http.Request) {
-
-	// check scheme
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-
 	// build url
 	toCall := fmt.Sprintf("%s://%s%s", scheme, portTo, r.URL.String())
 	debug("Create request for ", toCall)
@@ -105,7 +100,7 @@ func handleReverseRequest(w http.ResponseWriter, r *http.Request) {
 func validateFlags() {
 	for _, f := range []string{portTo, listen} {
 		if !strings.Contains(f, ":") {
-			log.Fatalf("%s is not right, you must use a coma mark to separate host and port", f)
+			log.Fatalf("%s is not right, you must use a colon (:) to separate host and port", f)
 		}
 
 	}
@@ -116,6 +111,9 @@ func validateFlags() {
 		portTo = "127.0.0.1:" + parts[1]
 	}
 
+	if scheme != "http" && scheme != "https" {
+		log.Fatalf(`Scheme can only be "http" or "https", not %q`, scheme)
+	}
 }
 
 // debug writes message when verbose flag is true.
@@ -128,6 +126,7 @@ func debug(v ...interface{}) {
 func main() {
 	flag.StringVar(&portTo, "p", portTo, "service port")
 	flag.StringVar(&listen, "l", listen, "listen interface")
+	flag.StringVar(&scheme, "s", scheme, "scheme to proxy")
 	flag.BoolVar(&verbose, "v", verbose, "verbose")
 	flag.Parse()
 
