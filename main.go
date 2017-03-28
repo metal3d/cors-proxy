@@ -84,13 +84,13 @@ func handleReverseRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// copy the reponse from server to the connected client request
-	w.WriteHeader(resp.StatusCode)
 	for h, v := range resp.Header {
 		for _, v := range v {
 			w.Header().Add(h, v)
 		}
 	}
+	// copy the reponse from server to the connected client request
+	w.WriteHeader(resp.StatusCode)
 
 	wr, err := io.Copy(w, resp.Body)
 	if err != nil {
